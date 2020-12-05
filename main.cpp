@@ -13,6 +13,60 @@ int const UpdatesPerSecond = 5;
 vector<vector<bool>> game(ConsoleWidth-2/*x*/, vector<bool>(ConsoleHeight-3/*y*/));
 vector<char> command_line;
 
+int wrap(int n , int max){
+    if(n < 0){
+        return max - (abs(n) % max);
+    }
+    return n % max;
+}
+
+VOID update() {
+    int sizeX = game.size();
+    int sizeY = game[0].size();
+    std::vector<std::vector<bool> > newGame;
+    for(int x = 0; x < sizeX;x++){
+        for(int y = 0; y < sizeY;y++){
+            int alive_cell = 0;
+            
+            
+            //NORMAL CASE
+            //      x1->
+            
+            //y1    ###
+            //|     #*#
+            //V     ###
+            
+            // * -> y1 == y && x1 == x
+            for(int x1 = x - 1; x1 < x + 1; x1++){
+                //###
+                //#*#
+                //###
+                for(int y1 = y - 1; y1 < y + 1; y1++){
+                    if(y1 == y && x1 == x){
+                        //se è la cella stessa continua con il prossimo
+                        continue;
+                    }
+                    if(game[wrap(x,sizeX)][wrap(y,sizeY)] == true){
+                        //aumenta il numero di vicini
+                        alive_cell++;
+                    }
+                }
+            }
+            if(alive_cell < 2){
+                newGame[x][y] = 0;
+            }
+            if(alive_cell == 2 || alive_cell == 3){
+                newGame[x][y] = 1;
+            }
+            if(alive_cell > 3){
+                newGame[x][y] = 0;
+            }
+            
+        }
+    }
+    game = newGame;
+}
+
 VOID WriteToScreen(wchar_t* screenBuffer, int x, int y, char c)
 {
     screenBuffer[y * ConsoleWidth + x] = c;
