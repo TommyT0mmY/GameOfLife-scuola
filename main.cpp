@@ -8,7 +8,7 @@
 using namespace std;
 
 int const ConsoleHeight = 40, ConsoleWidth = 120;
-int const UpdatesPerSecond = 5;
+int const UpdatesPerSecond = 1;
 
 vector<vector<bool>> game(ConsoleWidth-2/*x*/, vector<bool>(ConsoleHeight-3/*y*/));
 vector<char> command_line;
@@ -23,7 +23,7 @@ int wrap(int n , int max){
 VOID update() {
     int sizeX = game.size();
     int sizeY = game[0].size();
-    std::vector<std::vector<bool> > newGame;
+    std::vector<std::vector<bool> > newGame(ConsoleWidth-2/*x*/, vector<bool>(ConsoleHeight-3/*y*/));
     for(int x = 0; x < sizeX;x++){
         for(int y = 0; y < sizeY;y++){
             int alive_cell = 0;
@@ -46,22 +46,28 @@ VOID update() {
                         //se è la cella stessa continua con il prossimo
                         continue;
                     }
-                    if(game[wrap(x,sizeX)][wrap(y,sizeY)] == true){
+                    if(game[wrap(x1,sizeX)][wrap(y1,sizeY)] == true) {
                         //aumenta il numero di vicini
                         alive_cell++;
                     }
                 }
             }
-            if(alive_cell < 2){
-                newGame[x][y] = 0;
-            }
-            if(alive_cell == 2 || alive_cell == 3){
-                newGame[x][y] = 1;
-            }
-            if(alive_cell > 3){
-                newGame[x][y] = 0;
-            }
+
+            //TODO fix regole
+            // if(alive_cell < 2){
+            //     newGame[x][y] = 0;
+            // }
+            // if((alive_cell == 2 || alive_cell == 3) && game[x][y]){
+            //     newGame[x][y] = 1;
+            // }
+            // if(alive_cell == 3 && !game[x][y]){
+            //     newGame[x][y] = 1;
+            // }
+            // if(alive_cell > 3){
+            //     newGame[x][y] = 0;
+            // }
             
+            printf("x: %i, y: %i, alive_cells: %i\n",x,y,alive_cell); //debug
         }
     }
     game = newGame;
@@ -135,9 +141,14 @@ int main()
 
     auto t1 = chrono::high_resolution_clock::now();
     auto t2 = chrono::high_resolution_clock::now();
-    chrono::nanoseconds NanosecondsPerFrame((int)(1e6/UpdatesPerSecond));
+    chrono::nanoseconds NanosecondsPerFrame((int)(1.f/(float)UpdatesPerSecond*1e9));
 
     chrono::nanoseconds Counter(0);
+
+    game[4][4] = true;
+    game[4][5] = true;
+    game[5][4] = true;
+    game[5][5] = true;
 
     while(1)
     {
@@ -149,18 +160,23 @@ int main()
         //lettura e gestione degli input
         ReadInput(hInput);
 
-        if (Counter.count() >= NanosecondsPerFrame.count()) {
+        if (Counter >= NanosecondsPerFrame) {
             Counter = chrono::nanoseconds(0);
+            cout << "----\n";
+            update();
 
-            /*
-
-            UPDATE GIOCO
-
-            */
         }
 
         //draw gioco
-        //TODO
+        
+        for (int x = 0; x < game.size(); ++x)
+        {
+            for (int y = 0; y < game[0].size(); ++y)
+            {
+                if (game[x][y])
+                    WriteToScreen(screen, x + 1, y + 1, '*');
+            }
+        }
 
         //draw bordi
 
@@ -182,12 +198,13 @@ int main()
         screen[ConsoleWidth * ConsoleHeight - 1] = '\0';
         WriteConsoleOutputCharacterW(hConsole, screen, ConsoleWidth * ConsoleHeight, { 0,0 }, &dwBytesWritten);
 
+        Sleep(3);
+
         t2 = chrono::high_resolution_clock::now();
         
-        auto delta_time = t2-t1;
+        std::chrono::nanoseconds delta_time = t2-t1;
 
         Counter+=delta_time;
-        Sleep(3);
     }
 
     return 0;
