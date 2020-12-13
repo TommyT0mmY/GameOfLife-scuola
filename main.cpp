@@ -21,53 +21,51 @@ int wrap(int n , int max){
 }
 
 VOID update() {
-    int sizeX = game.size();
-    int sizeY = game[0].size();
-    std::vector<std::vector<bool> > newGame(ConsoleWidth-2/*x*/, vector<bool>(ConsoleHeight-3/*y*/));
-    for(int x = 0; x < sizeX;x++){
-        for(int y = 0; y < sizeY;y++){
-            int alive_cell = 0;
-            
-            
-            //NORMAL CASE
-            //      x1->
-            
-            //y1    ###
-            //|     #*#
-            //V     ###
-            
-            // * -> y1 == y && x1 == x
-            for(int x1 = x - 1; x1 < x + 1; x1++){
-                //###
-                //#*#
-                //###
-                for(int y1 = y - 1; y1 < y + 1; y1++){
-                    if(y1 == y && x1 == x){
-                        //se è la cella stessa continua con il prossimo
-                        continue;
-                    }
-                    if(game[wrap(x1,sizeX)][wrap(y1,sizeY)] == true) {
-                        //aumenta il numero di vicini
-                        alive_cell++;
-                    }
-                }
-            }
+vector<vector<bool> > newGame(ConsoleWidth-2, vector<bool>(ConsoleHeight-3));
+    for(int x = 0; x < game.size();x++){
+        for(int y = 0; y < game[x].size();y++){
+            //for each cell
+            int aliveCell = 0;
 
-            //TODO fix regole
-            // if(alive_cell < 2){
-            //     newGame[x][y] = 0;
-            // }
-            // if((alive_cell == 2 || alive_cell == 3) && game[x][y]){
-            //     newGame[x][y] = 1;
-            // }
-            // if(alive_cell == 3 && !game[x][y]){
-            //     newGame[x][y] = 1;
-            // }
-            // if(alive_cell > 3){
-            //     newGame[x][y] = 0;
-            // }
-            
-            printf("x: %i, y: %i, alive_cells: %i\n",x,y,alive_cell); //debug
+            //dumb code
+            if(game[wrap(x - 1,game.size())][wrap(y - 1,game[x].size())]){
+                aliveCell++;
+            }
+            if(game[wrap(x,game.size())][wrap(y - 1,game[x].size())]){
+                aliveCell++;
+            }
+            if(game[wrap(x + 1,game.size())][wrap(y - 1,game[x].size())]){
+                aliveCell++;
+            }
+            if(game[wrap(x - 1,game.size())][wrap(y,game[x].size())]){
+                aliveCell++;
+            }
+            if(game[wrap(x + 1,game.size())][wrap(y,game[x].size())]){
+                aliveCell++;
+            }
+            if(game[wrap(x - 1,game.size())][wrap(y + 1,game[x].size())]){
+                aliveCell++;
+            }
+            if(game[wrap(x,game.size())][wrap(y + 1,game[x].size())]){
+                aliveCell++;
+            }
+            if(game[wrap(x + 1,game.size())][wrap(y + 1,game[x].size())]){
+                aliveCell++;
+            }
+            //big dumb
+
+            if(aliveCell < 2){
+                newGame[x][y] = 0;
+            }
+            if((aliveCell == 2 || aliveCell == 3) && game[x][y]){
+                newGame[x][y] = 1;
+            }
+            if(aliveCell == 3 && !game[x][y]){
+                newGame[x][y] = 1;
+            }
+            if(aliveCell > 3){
+                newGame[x][y] = 0;
+            }
         }
     }
     game = newGame;
@@ -146,10 +144,44 @@ int main()
     chrono::nanoseconds Counter(0);
 
     game[4][4] = true;
-    game[4][5] = true;
     game[5][4] = true;
-    game[5][5] = true;
-
+    game[6][4] = true;
+    game[7][4] = true;
+    game[8][4] = true;
+    game[9][4] = true;
+    game[10][4] = true;
+    game[11][4] = true;
+    //12
+    game[13][4] = true;
+    game[14][4] = true;
+    game[15][4] = true;
+    game[16][4] = true;
+    game[17][4] = true;
+    //18
+    //19
+    //20
+    game[21][4] = true;
+    game[22][4] = true;
+    game[23][4] = true;
+    //24
+    //25
+    //26
+    //27
+    //28
+    //29
+    game[30][4] = true;
+    game[31][4] = true;
+    game[32][4] = true;
+    game[33][4] = true;
+    game[34][4] = true;
+    game[35][4] = true;
+    game[36][4] = true;
+    //37
+    game[38][4] = true;
+    game[39][4] = true;
+    game[40][4] = true;
+    game[41][4] = true;
+    game[42][4] = true;
     while(1)
     {
         t1 = chrono::high_resolution_clock::now();
