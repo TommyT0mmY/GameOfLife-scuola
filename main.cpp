@@ -104,15 +104,18 @@ VOID RunCommand()
     //RUN
     if(args[0] == "run") {
         esegui = true;
+        return;
     }
     //stop
     if(args[0] == "stop") {
         esegui = false;
+        return;
     }
     //toggle
     if(args[0] == "t"){
         //stoi == string to int
         game[stoi(args[1])][stoi(args[2])] = !game[stoi(args[1])][stoi(args[2])];
+        return;
     }
     //save
     if(args[0] == "save") {
@@ -124,6 +127,8 @@ VOID RunCommand()
         for (int x = 0; x < game.size(); ++x)
             for (int y = 0; y < game[0].size(); ++y)
                 file_stream << game[x][y];
+        
+        return;
     }
 
 }
