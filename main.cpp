@@ -123,12 +123,30 @@ VOID RunCommand()
             return;
         ofstream file_stream;
         file_stream.open(args[1]);
-        file_stream << ConsoleWidth << " " << ConsoleHeight << "\n";
-        for (int x = 0; x < game.size(); ++x)
-            for (int y = 0; y < game[0].size(); ++y)
+        file_stream << game.size() << " " << game[0].size();
+        for (int y = 0; y < game[0].size(); ++y) {
+            file_stream << "\n";
+            for (int x = 0; x < game.size(); ++x)
                 file_stream << game[x][y];
-        
-        return;
+        }
+    }
+    //load
+    if (args[0] == "load") {
+        if (args.size() != 2)
+            return;
+
+        ifstream file_stream;
+        file_stream.open(args[1]);
+        int read_w, read_h;
+        file_stream >> read_w >> read_h;
+        for (int y = 0; y < read_h; ++y) {
+            string curr_l;
+            file_stream >> curr_l;
+            for (int x = 0; x < read_w; ++x) {
+                game[x][y] = curr_l[x] - '0';
+            }
+        }
+
     }
 
 }
