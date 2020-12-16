@@ -105,9 +105,16 @@ VOID RunCommand()
     if(args[0] == "run") {
         esegui = true;
     }
+    //stop
     if(args[0] == "stop") {
         esegui = false;
     }
+    //toggle
+    if(args[0] == "t"){
+        //stoi == string to int
+        game[stoi(args[1])][stoi(args[2])] = !game[stoi(args[1])][stoi(args[2])];
+    }
+    //save
     if(args[0] == "save") {
         if (args.size() != 2)
             return;
