@@ -104,6 +104,7 @@ VOID RunCommand()
     if(args[0] == "run"){
         esegui = true;
     }
+    //stop
     if(args[0] == "stop"){
         esegui = false;
     }
