@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <Windows.h>
 #include <chrono>
@@ -101,12 +102,21 @@ VOID RunCommand()
 {
     vector<string> args = split(std::string(command_line.begin(), command_line.end()), ' ');
     //RUN
-    if(args[0] == "run"){
+    if(args[0] == "run") {
         esegui = true;
     }
-    //stop
-    if(args[0] == "stop"){
+    if(args[0] == "stop") {
         esegui = false;
+    }
+    if(args[0] == "save") {
+        if (args.size() != 2)
+            return;
+        ofstream file_stream;
+        file_stream.open(args[1]);
+        file_stream << ConsoleWidth << " " << ConsoleHeight << "\n";
+        for (int x = 0; x < game.size(); ++x)
+            for (int y = 0; y < game[0].size(); ++y)
+                file_stream << game[x][y];
     }
 
 }
@@ -227,7 +237,6 @@ int main()
 
         if (Counter >= NanosecondsPerFrame) {
             Counter = chrono::nanoseconds(0);
-            cout << "----\n";
             if(esegui){
                 update();
             }
