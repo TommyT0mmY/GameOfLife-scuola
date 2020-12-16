@@ -12,6 +12,7 @@ int const UpdatesPerSecond = 1;
 
 vector<vector<bool>> game(ConsoleWidth-2/*x*/, vector<bool>(ConsoleHeight-3/*y*/));
 vector<char> command_line;
+bool esegui = false;//indica se la simulazione deve eseguire
 
 int wrap(int n , int max){
     if(n < 0){
@@ -85,7 +86,15 @@ VOID DrawCommandLine(wchar_t* screenBuffer)
 
 VOID RunCommand()
 {
-    //TODO
+    std::string command_string(command_line.begin(),command_line.end());
+    //RUN
+    if(command_string == "run"){
+        esegui = true;
+    }
+    if(command_string == "stop"){
+        esegui = false;
+    }
+
 }
 
 VOID ReadInput(HANDLE inputHandle)
@@ -205,7 +214,9 @@ int main()
         if (Counter >= NanosecondsPerFrame) {
             Counter = chrono::nanoseconds(0);
             cout << "----\n";
-            update();
+            if(esegui){
+                update();
+            }
 
         }
 
@@ -251,3 +262,4 @@ int main()
 
     return 0;
 }
+
