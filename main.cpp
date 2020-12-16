@@ -83,6 +83,11 @@ VOID DrawCommandLine(wchar_t* screenBuffer)
         WriteToScreen(screenBuffer, x + 2, (ConsoleHeight - 2), command_line[x]);
 }
 
+VOID RunCommand()
+{
+    //TODO
+}
+
 VOID ReadInput(HANDLE inputHandle)
 {
     DWORD numberOfInputs;
@@ -103,12 +108,17 @@ VOID ReadInput(HANDLE inputHandle)
             if (virtualKeyCode == VK_BACK) //backspace
             {
                 if (command_line.size() > 0)
-                    command_line.pop_back();   
+                    command_line.pop_back();
             }
             else if (isalnum(pressedKey) || virtualKeyCode == VK_SPACE) //alfanumerico o spazio
             {
                 if (command_line.size() < ConsoleWidth - 3)
                     command_line.push_back(pressedKey);
+            }
+            else if (virtualKeyCode == VK_RETURN)
+            {
+                RunCommand();
+                command_line.clear();
             }
         }
     }
@@ -200,7 +210,7 @@ int main()
         }
 
         //draw gioco
-        
+
         for (int x = 0; x < game.size(); ++x)
         {
             for (int y = 0; y < game[0].size(); ++y)
@@ -222,7 +232,7 @@ int main()
             WriteToScreen(screen, 0, y, '|');
             WriteToScreen(screen, ConsoleWidth-1, y, '|');
         }
-        
+
         //draw linea di comando
         DrawCommandLine(screen);
 
@@ -233,7 +243,7 @@ int main()
         Sleep(3);
 
         t2 = chrono::high_resolution_clock::now();
-        
+
         std::chrono::nanoseconds delta_time = t2-t1;
 
         Counter+=delta_time;
