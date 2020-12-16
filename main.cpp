@@ -84,14 +84,26 @@ VOID DrawCommandLine(wchar_t* screenBuffer)
         WriteToScreen(screenBuffer, x + 2, (ConsoleHeight - 2), command_line[x]);
 }
 
+vector<string> split(const string &s, char delim)
+{
+    vector<string> result;
+    stringstream ss(s);
+    string item;
+
+    while (getline(ss, item, delim)) {
+        result.push_back(item);
+    }
+    return result;
+}
+
 VOID RunCommand()
 {
-    std::string command_string(command_line.begin(),command_line.end());
+    vector<string> args = split(std::string(command_line.begin(), command_line.end()), ' ');
     //RUN
-    if(command_string == "run"){
+    if(args[0] == "run"){
         esegui = true;
     }
-    if(command_string == "stop"){
+    if(args[0] == "stop"){
         esegui = false;
     }
 
