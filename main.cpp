@@ -30,32 +30,22 @@ vector<vector<bool> > newGame(ConsoleWidth-2, vector<bool>(ConsoleHeight-3));
             //for each cell
             int aliveCell = 0;
 
-            //dumb code
-            if(game[wrap(x - 1,game.size())][wrap(y - 1,game[x].size())]){
-                aliveCell++;
+
+            for(int x1 = x - 1; x1 < x + 2; x1++){
+                //###
+                //#*#
+                //###
+                for(int y1 = y - 1; y1 < y + 2; y1++){
+                    if(y1 == y && x1 == x){
+                        //se è la cella stessa continua con il prossimo
+                        continue;
+                    }
+                    if(game[wrap(x1,game.size())][wrap(y1,game[0].size())] == true) {
+                        //aumenta il numero di vicini
+                        aliveCell++;
+                    }
+                }
             }
-            if(game[wrap(x,game.size())][wrap(y - 1,game[x].size())]){
-                aliveCell++;
-            }
-            if(game[wrap(x + 1,game.size())][wrap(y - 1,game[x].size())]){
-                aliveCell++;
-            }
-            if(game[wrap(x - 1,game.size())][wrap(y,game[x].size())]){
-                aliveCell++;
-            }
-            if(game[wrap(x + 1,game.size())][wrap(y,game[x].size())]){
-                aliveCell++;
-            }
-            if(game[wrap(x - 1,game.size())][wrap(y + 1,game[x].size())]){
-                aliveCell++;
-            }
-            if(game[wrap(x,game.size())][wrap(y + 1,game[x].size())]){
-                aliveCell++;
-            }
-            if(game[wrap(x + 1,game.size())][wrap(y + 1,game[x].size())]){
-                aliveCell++;
-            }
-            //big dumb
 
             if(aliveCell < 2){
                 newGame[x][y] = 0;
