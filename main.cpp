@@ -16,8 +16,9 @@ vector<vector<bool>> game(ConsoleWidth-2/*x*/, vector<bool>(ConsoleHeight-3/*y*/
 vector<char> command_line;
 bool esegui = false;//indica se la simulazione deve eseguire
 
-int wrap(int n , int max){
-    if(n < 0){
+int wrap(int n , int max)
+{
+    if(n < 0) {
         return max - (abs(n) % max);
     }
     return n % max;
@@ -31,12 +32,12 @@ vector<vector<bool> > newGame(ConsoleWidth-2, vector<bool>(ConsoleHeight-3));
             int aliveCell = 0;
 
 
-            for(int x1 = x - 1; x1 < x + 2; x1++){
+            for(int x1 = x - 1; x1 < x + 2; x1++) {
                 //###
                 //#*#
                 //###
-                for(int y1 = y - 1; y1 < y + 2; y1++){
-                    if(y1 == y && x1 == x){
+                for(int y1 = y - 1; y1 < y + 2; y1++) {
+                    if(y1 == y && x1 == x) {
                         //se è la cella stessa continua con il prossimo
                         continue;
                     }
@@ -47,16 +48,16 @@ vector<vector<bool> > newGame(ConsoleWidth-2, vector<bool>(ConsoleHeight-3));
                 }
             }
 
-            if(aliveCell < 2){
+            if(aliveCell < 2) {
                 newGame[x][y] = 0;
             }
-            if((aliveCell == 2 || aliveCell == 3) && game[x][y]){
+            if((aliveCell == 2 || aliveCell == 3) && game[x][y]) {
                 newGame[x][y] = 1;
             }
-            if(aliveCell == 3 && !game[x][y]){
+            if(aliveCell == 3 && !game[x][y]) {
                 newGame[x][y] = 1;
             }
-            if(aliveCell > 3){
+            if(aliveCell > 3) {
                 newGame[x][y] = 0;
             }
         }
@@ -102,7 +103,7 @@ VOID RunCommand()
         return;
     }
     //toggle
-    if(args[0] == "t"){
+    if(args[0] == "t") {
         //stoi == string to int
         game[stoi(args[1])][stoi(args[2])] = !game[stoi(args[1])][stoi(args[2])];
         return;
@@ -136,9 +137,7 @@ VOID RunCommand()
                 game[x][y] = curr_l[x] - '0';
             }
         }
-
     }
-
 }
 
 VOID ReadInput(HANDLE inputHandle)
@@ -151,25 +150,23 @@ VOID ReadInput(HANDLE inputHandle)
     INPUT_RECORD irInBuf[128];
     ReadConsoleInput(inputHandle, irInBuf, 128, &numberOfInputs);
 
-    for (int i = 0; i < numberOfInputs; ++i)
-    {
+    for (int i = 0; i < numberOfInputs; ++i) {
         //tasto premuto
-        if (irInBuf[i].EventType == KEY_EVENT && irInBuf[i].Event.KeyEvent.bKeyDown)
-        {
+        if (irInBuf[i].EventType == KEY_EVENT && irInBuf[i].Event.KeyEvent.bKeyDown) {
             CHAR pressedKey = irInBuf[i].Event.KeyEvent.uChar.AsciiChar;
             WORD virtualKeyCode = irInBuf[i].Event.KeyEvent.wVirtualKeyCode;
-            if (virtualKeyCode == VK_BACK) //backspace
-            {
+            //backspace premuto
+            if (virtualKeyCode == VK_BACK) {
                 if (command_line.size() > 0)
                     command_line.pop_back();
             }
-            else if (isalnum(pressedKey) || virtualKeyCode == VK_SPACE) //alfanumerico o spazio
-            {
+            //carattere alfanumerico inserito
+            else if (isalnum(pressedKey) || virtualKeyCode == VK_SPACE) {
                 if (command_line.size() < ConsoleWidth - 3)
                     command_line.push_back(pressedKey);
             }
-            else if (virtualKeyCode == VK_RETURN)
-            {
+            //invio premuto
+            else if (virtualKeyCode == VK_RETURN) {
                 RunCommand();
                 command_line.clear();
             }
@@ -245,8 +242,7 @@ int main()
     game[40][4] = true;
     game[41][4] = true;
     game[42][4] = true;
-    while(1)
-    {
+    while(1) {
         t1 = chrono::high_resolution_clock::now();
 
         //Pulizia buffer
@@ -257,7 +253,7 @@ int main()
 
         if (Counter >= NanosecondsPerFrame) {
             Counter = chrono::nanoseconds(0);
-            if(esegui){
+            if(esegui) {
                 update();
             }
 
@@ -265,10 +261,8 @@ int main()
 
         //draw gioco
 
-        for (int x = 0; x < game.size(); ++x)
-        {
-            for (int y = 0; y < game[0].size(); ++y)
-            {
+        for (int x = 0; x < game.size(); ++x) {
+            for (int y = 0; y < game[0].size(); ++y) {
                 if (game[x][y])
                     WriteToScreen(screen, x + 1, y + 1, '*');
             }
@@ -276,13 +270,11 @@ int main()
 
         //draw bordi
 
-        for (int x = 0; x < ConsoleWidth; ++x)
-        {
+        for (int x = 0; x < ConsoleWidth; ++x) {
             WriteToScreen(screen, x, 0, '#');
             WriteToScreen(screen, x, ConsoleHeight-1, '#');
         }
-        for (int y = 0; y < ConsoleHeight; ++y)
-        {
+        for (int y = 0; y < ConsoleHeight; ++y) {
             WriteToScreen(screen, 0, y, '|');
             WriteToScreen(screen, ConsoleWidth-1, y, '|');
         }
@@ -299,10 +291,9 @@ int main()
         t2 = chrono::high_resolution_clock::now();
 
         std::chrono::nanoseconds delta_time = t2-t1;
-
+        
         Counter+=delta_time;
     }
 
     return 0;
 }
-
