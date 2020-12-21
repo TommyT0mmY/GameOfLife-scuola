@@ -1,20 +1,20 @@
+#include <Windows.h>
 #include <iostream>
 #include <fstream>
-#include <vector>
-#include <Windows.h>
-#include <chrono>
-#include <thread>
-#include <math.h>
 #include <sstream>
+#include <chrono>
+#include <math.h>
+#include <thread>
+#include <vector>
 
 using namespace std;
 
 int const ConsoleHeight = 40, ConsoleWidth = 120;
-int const UpdatesPerSecond = 1;
+int const UpdatesPerSecond = 1; // FPS Simulazione
 
-vector<vector<bool>> game(ConsoleWidth-2/*x*/, vector<bool>(ConsoleHeight-3/*y*/));
+vector<vector<bool>> game(ConsoleWidth-2/*larghezza*/, vector<bool>(ConsoleHeight-3/*altezza*/));
 vector<char> command_line;
-bool esegui = false;//indica se la simulazione deve eseguire
+bool esegui = false; // Indica se la simulazione deve eseguire
 
 int wrap(int n , int max)
 {
@@ -24,25 +24,27 @@ int wrap(int n , int max)
     return n % max;
 }
 
-VOID update() {
-vector<vector<bool> > newGame(ConsoleWidth-2, vector<bool>(ConsoleHeight-3));
-    for(int x = 0; x < game.size();x++){
-        for(int y = 0; y < game[x].size();y++){
-            //for each cell
+VOID update()
+{
+    vector<vector<bool>> newGame(ConsoleWidth-2, vector<bool>(ConsoleHeight-3));
+    for(int x = 0; x < game.size(); x++){
+        for(int y = 0; y < game[x].size(); y++) {
+
+            // Per ogni cella
+
             int aliveCell = 0;
 
-
-            for(int x1 = x - 1; x1 < x + 2; x1++) {
-                //###
-                //#*#
-                //###
-                for(int y1 = y - 1; y1 < y + 2; y1++) {
+            for(int x1 = x - 1; x1 <= x + 1; x1++) {
+                // ###
+                // #*#
+                // ###
+                for(int y1 = y - 1; y1 <= y + 1; y1++) {
                     if(y1 == y && x1 == x) {
-                        //se è la cella stessa continua con il prossimo
+                        // Se è la cella stessa continua con il prossimo
                         continue;
                     }
                     if(game[wrap(x1,game.size())][wrap(y1,game[0].size())] == true) {
-                        //aumenta il numero di vicini
+                        // Aumenta il numero di vicini
                         aliveCell++;
                     }
                 }
@@ -73,6 +75,7 @@ VOID WriteToScreen(wchar_t* screenBuffer, int x, int y, char c)
 VOID DrawCommandLine(wchar_t* screenBuffer)
 {
     WriteToScreen(screenBuffer, 1, ConsoleHeight - 2, '>');
+
     for (int x = 0; x < ((command_line.size() <= ConsoleWidth - 1) ? command_line.size() : ConsoleWidth - 1); ++x)
         WriteToScreen(screenBuffer, x + 2, (ConsoleHeight - 2), command_line[x]);
 }
@@ -92,23 +95,23 @@ vector<string> split(const string &s, char delim)
 VOID RunCommand()
 {
     vector<string> args = split(std::string(command_line.begin(), command_line.end()), ' ');
-    //RUN
+    // Run
     if(args[0] == "run") {
         esegui = true;
         return;
     }
-    //stop
+    // Stop
     if(args[0] == "stop") {
         esegui = false;
         return;
     }
-    //toggle
+    // Toggle
     if(args[0] == "t") {
-        //stoi == string to int
+        //stoi => string to int
         game[stoi(args[1])][stoi(args[2])] = !game[stoi(args[1])][stoi(args[2])];
         return;
     }
-    //save
+    // Save
     if(args[0] == "save") {
         if (args.size() != 2)
             return;
@@ -121,7 +124,7 @@ VOID RunCommand()
                 file_stream << game[x][y];
         }
     }
-    //load
+    // Load
     if (args[0] == "load") {
         if (args.size() != 2)
             return;
@@ -151,21 +154,22 @@ VOID ReadInput(HANDLE inputHandle)
     ReadConsoleInput(inputHandle, irInBuf, 128, &numberOfInputs);
 
     for (int i = 0; i < numberOfInputs; ++i) {
-        //tasto premuto
+        // Tasto premuto 
         if (irInBuf[i].EventType == KEY_EVENT && irInBuf[i].Event.KeyEvent.bKeyDown) {
-            CHAR pressedKey = irInBuf[i].Event.KeyEvent.uChar.AsciiChar;
-            WORD virtualKeyCode = irInBuf[i].Event.KeyEvent.wVirtualKeyCode;
-            //backspace premuto
+            auto keyEvent = irInBuf[i].Event.KeyEvent;
+            CHAR pressedKey = keyEvent.uChar.AsciiChar;
+            WORD virtualKeyCode = keyEvent.wVirtualKeyCode;
+            // Backspace premuto
             if (virtualKeyCode == VK_BACK) {
                 if (command_line.size() > 0)
                     command_line.pop_back();
             }
-            //carattere alfanumerico inserito
+            // Carattere alfanumerico inserito
             else if (isalnum(pressedKey) || virtualKeyCode == VK_SPACE) {
                 if (command_line.size() < ConsoleWidth - 3)
                     command_line.push_back(pressedKey);
             }
-            //invio premuto
+            // Invio premuto
             else if (virtualKeyCode == VK_RETURN) {
                 RunCommand();
                 command_line.clear();
@@ -176,27 +180,28 @@ VOID ReadInput(HANDLE inputHandle)
 
 int main()
 {
-    //debug, lo stdout scriverà a file
+    // Debug su file logs.txt
     freopen("logs.txt", "w", stdout);
 
-    //buffer dello schermo
+    // buffer dello schermo
     wchar_t* screen = new wchar_t[ConsoleWidth * ConsoleHeight];
     HANDLE hConsole = CreateConsoleScreenBuffer(GENERIC_READ | GENERIC_WRITE, 0, NULL, CONSOLE_TEXTMODE_BUFFER, NULL);
     SetConsoleActiveScreenBuffer(hConsole);
     DWORD dwBytesWritten = 0;
 
-    //titolo della finestra
+    // Titolo della finestra
     SetConsoleTitleA("Game Of Life");
 
-    //rendo il cursore invisibile
+    // Cursore invisibile
     CONSOLE_CURSOR_INFO cursorInfo;
     GetConsoleCursorInfo(hConsole, &cursorInfo);
-    cursorInfo.bVisible = false; // set the cursor visibility
+    cursorInfo.bVisible = false;
     SetConsoleCursorInfo(hConsole, &cursorInfo);
 
-    //handle per l'input
+    // Handle per l'input
     HANDLE hInput = GetStdHandle(STD_INPUT_HANDLE);
 
+    // Timing
     auto t1 = chrono::high_resolution_clock::now();
     auto t2 = chrono::high_resolution_clock::now();
     chrono::nanoseconds NanosecondsPerFrame((int)(1.f/(float)UpdatesPerSecond*1e9));
@@ -242,25 +247,26 @@ int main()
     game[40][4] = true;
     game[41][4] = true;
     game[42][4] = true;
+
+    // Game Loop
     while(1) {
         t1 = chrono::high_resolution_clock::now();
 
-        //Pulizia buffer
+        // Pulizia buffer di output
         fill_n(screen, ConsoleWidth * ConsoleHeight, ' ');
 
-        //lettura e gestione degli input
+        // Elaborazione degli Input
         ReadInput(hInput);
 
+        // Update
         if (Counter >= NanosecondsPerFrame) {
             Counter = chrono::nanoseconds(0);
             if(esegui) {
                 update();
             }
-
         }
 
-        //draw gioco
-
+        // Draw gioco
         for (int x = 0; x < game.size(); ++x) {
             for (int y = 0; y < game[0].size(); ++y) {
                 if (game[x][y])
@@ -268,8 +274,7 @@ int main()
             }
         }
 
-        //draw bordi
-
+        // Draw bordi
         for (int x = 0; x < ConsoleWidth; ++x) {
             WriteToScreen(screen, x, 0, '#');
             WriteToScreen(screen, x, ConsoleHeight-1, '#');
@@ -279,19 +284,18 @@ int main()
             WriteToScreen(screen, ConsoleWidth-1, y, '|');
         }
 
-        //draw linea di comando
+        // Draw linea di comando
         DrawCommandLine(screen);
 
-        //scrittura buffer schermo
+        // Scrittura buffer di output
         screen[ConsoleWidth * ConsoleHeight - 1] = '\0';
         WriteConsoleOutputCharacterW(hConsole, screen, ConsoleWidth * ConsoleHeight, { 0,0 }, &dwBytesWritten);
 
+        // Timing 
         Sleep(3);
 
         t2 = chrono::high_resolution_clock::now();
-
         std::chrono::nanoseconds delta_time = t2-t1;
-        
         Counter+=delta_time;
     }
 
