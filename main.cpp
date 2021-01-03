@@ -208,46 +208,6 @@ int main()
 
     chrono::nanoseconds Counter(0);
 
-    game[4][4] = true;
-    game[5][4] = true;
-    game[6][4] = true;
-    game[7][4] = true;
-    game[8][4] = true;
-    game[9][4] = true;
-    game[10][4] = true;
-    game[11][4] = true;
-    //12
-    game[13][4] = true;
-    game[14][4] = true;
-    game[15][4] = true;
-    game[16][4] = true;
-    game[17][4] = true;
-    //18
-    //19
-    //20
-    game[21][4] = true;
-    game[22][4] = true;
-    game[23][4] = true;
-    //24
-    //25
-    //26
-    //27
-    //28
-    //29
-    game[30][4] = true;
-    game[31][4] = true;
-    game[32][4] = true;
-    game[33][4] = true;
-    game[34][4] = true;
-    game[35][4] = true;
-    game[36][4] = true;
-    //37
-    game[38][4] = true;
-    game[39][4] = true;
-    game[40][4] = true;
-    game[41][4] = true;
-    game[42][4] = true;
-
     // Game Loop
     while(1) {
         t1 = chrono::high_resolution_clock::now();
